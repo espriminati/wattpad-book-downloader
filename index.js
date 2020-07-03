@@ -7,7 +7,7 @@ const
 var
 	images = [];
 
-function loadChapter(url, fileName = "chapter.html", fullStory = "") {
+function loadChapter(url, fileName = "chapter.html", chapterName, fullStory = "") {
 	return new Promise((resolve, reject) => {
 		var uri = "";
 		var urlParts = url.split("/");
@@ -54,11 +54,11 @@ function loadChapter(url, fileName = "chapter.html", fullStory = "") {
 				}
 				fullStory += "</p>"
 			}
-			fs.writeFileSync("output/" + fileName, `<!DOCTYPE html><html><head>	<title>${fileName.replace(".html", "")}</title>	<meta charset='UTF-8'></head><body>	${fullStory}</body></html>`, { encoding: "utf-8" });
+			fs.writeFileSync("output/" + fileName, `<!DOCTYPE html><html><head>	<title>${chapterName}</title>	<meta charset='UTF-8'></head><body>	${fullStory}</body></html>`, { encoding: "utf-8" });
 
 			var nextPageButton = $(".load-more-page");
 			if (nextPageButton.length > 0)
-				loadChapter(nextPageButton.attr().href, fileName, fullStory).then(resolve);
+				loadChapter(nextPageButton.attr().href, fileName, chapterName, fullStory).then(resolve);
 			else
 				resolve();
 		}).catch(err => console.log(err.message));
@@ -79,9 +79,9 @@ async function loadBook(url) {
 		for (let i = 0; i < $(".table-of-contents").children().length; i++) {
 			const chapter = $(".table-of-contents").children()[i];
 			if (uri.startsWith("https://www.wattpad.com/story"))
-				await loadChapter("https://www.wattpad.com" + chapter.children[1].attribs.href, "Chapter " + ('000' + (i + 1)).slice(-3) + ". " + chapter.children[1].firstChild.data.replace(/\n/gi, "") + ".html");
+				await loadChapter("https://www.wattpad.com" + chapter.children[1].attribs.href, "Chapter " + ('000' + (i + 1)).slice(-3) + ".html", chapter.children[1].firstChild.data.replace(/\n/gi, ""));
 			else
-				await loadChapter("https://www.wattpad.com" + chapter.children[1].attribs.href, "Chapter " + ('000' + (i + 1)).slice(-3) + ". " + chapter.children[1].children[1].firstChild.data.replace(/\n/gi, "") + ".html");
+				await loadChapter("https://www.wattpad.com" + chapter.children[1].attribs.href, "Chapter " + ('000' + (i + 1)).slice(-3) + ".html",  chapter.children[1].children[1].firstChild.data.replace(/\n/gi, ""));
 
 		}
 		console.log("Downloaded all chapters, starting images");
