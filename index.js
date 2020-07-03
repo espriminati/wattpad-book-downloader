@@ -46,7 +46,10 @@ function loadChapter(url, fileName = "chapter.html", fullStory = "") {
 						else if (node.tagName == "br")
 							fullStory += "<br>";
 						else
-							fullStory += node.data;
+							if (node.data != undefined)
+								fullStory += node.data;
+							else
+								fullStory += `<iframe src="https://youtube.com/embed/${node.attribs["data-video-id"]}"></iframe>`;
 					});
 				}
 				fullStory += "</p>"
@@ -58,7 +61,7 @@ function loadChapter(url, fileName = "chapter.html", fullStory = "") {
 				loadChapter(nextPageButton.attr().href, fileName, fullStory).then(resolve);
 			else
 				resolve();
-		}).catch(console.log);
+		}).catch(err => console.log(err.message));
 	})
 }
 
